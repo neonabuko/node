@@ -3,16 +3,30 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
 
+app.listeners();
+
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+	res.sendFile(__dirname + '/index.html');
 });
 
+/*defining usernames and userIds*/
+let userNames = {};
+
+
 io.on('connection', (socket) => {
-  socket.on('chat message', msg => {
-    io.emit('chat message', msg);
-  });
+	socket.on('chat message', msg => {
+		io.emit('chat message', msg);
+		console.log(app);
+	});
+});
+
+io.on('setSocketId', data => {
+	let userName = data.name;
+	let userId = data.userId;
+	userNames[userName] = userId;
+	console.log(userName);
 });
 
 http.listen(port, () => {
-  console.log(`Socket.IO server running at http://localhost:${port}/`);
+	console.log(`Socket.IO server running at http://localhost:${port}/`);
 });
